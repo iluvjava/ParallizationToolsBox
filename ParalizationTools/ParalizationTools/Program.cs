@@ -13,7 +13,7 @@ namespace BenchMarkingWithPrimeNumbers
     {
         static void Main(string[] args)
         {
-            
+            ComputeNode.FindAllPrimesUnder(0b1_0000000000000000_0000000000);
         }
     }
 
@@ -98,7 +98,7 @@ namespace BenchMarkingWithPrimeNumbers
             taskRunner.RunParallel();
 
             List<int> primes = new List<int>(); 
-            foreach (SortedSet<int> batch in taskRunner._results)
+            foreach (SortedSet<int> batch in taskRunner.results_)
             {
                 foreach (int prime in batch)
                 {

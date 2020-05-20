@@ -6,70 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskRunners
 {
-    /// <summary>
-    ///     T is the return type of the task. 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class QueueBasedTaskRunner<T> : AbstractTaskRnner, ITaskRunner<T>
-    {
-        int _threadsAllowed = Environment.ProcessorCount;
-        Queue<Task<T>> _tasks;
-        public Queue<T> _results;
 
-        public QueueBasedTaskRunner(Queue<Task<T>> listOfTasks) : this(listOfTasks, new Queue<T>())
-        { }
-
-        public QueueBasedTaskRunner(Queue<Task<T>> listOfTasks, Queue<T> ListOfResults)
-        {
-            _tasks = listOfTasks;
-            _results = ListOfResults;
-        }
-
-        override
-        protected Thread GetThread()
-        {
-            Thread t = new Thread(
-                    () => {
-                        while (true)
-                        {
-                            Task<T> task = GetTask();
-                            if (task is null) break;
-                            task.Start();
-                            AddResult(task.Result);
-                        }
-
-                    }
-                );
-            return t;
-        }
-
-        public Task<T> GetTask()
-        {
-            lock (this)
-            {
-                if (_tasks.Count == 0)
-                {
-                    return null;
-                }
-                return _tasks.Dequeue();
-            }
-        }
-
-        public void AddResult(T result)
-        {
-            lock (this)
-                _results.Enqueue(result);
-        }
-
-        public void AddTask(Task<T> t)
-        {
-            lock (this)
-            {
-                Console.WriteLine("adding tasks...");
-                _tasks.Enqueue(t);
-            }
-        }
-    }
 
     /// <summary>
     ///     A task runner with return values. 
@@ -77,6 +14,10 @@ namespace TaskRunners
     /// <typeparam name="T"></typeparam>
     public interface ITaskRunner<T>
     {
+        /// <summary>
+        ///     Run all the tasks in parallel. 
+        ///     And stored the results, execution will be out of order. 
+        /// </summary>
         void RunParallel();
         void AddResult(T result);
         Task<T> GetTask();
@@ -120,26 +61,33 @@ namespace TaskRunners
     public class QueueBaseTaskRunner : AbstractTaskRnner, ITaskRunner
     {
 
-        Queue<Task> _tasks;
+        Queue<Task> tasks_;
+
+        public void QueueBasedTaskRunner(Queue<Task> tasksList)
+        {
+            tasks_ = tasksList;
+        }
 
         public void AddTask(Task t)
         {
-            lock (this)
+            lock (tasks_)
             {
                 Console.WriteLine("adding tasks...");
-                _tasks.Enqueue(t);
+                tasks_.Enqueue(t);
             }
         }
 
         public Task GetTask()
         {
-            lock (this)
+
+            lock (tasks_)
             {
-                if (_tasks.Count == 0)
+                if (tasks_.Count == 0)
                 {
                     return null;
                 }
-                return _tasks.Dequeue();
+                if (tasks_.Peek() is null) throw new Exception("Null task not allowed.");
+                return tasks_.Dequeue();
             }
         }
 
@@ -160,7 +108,71 @@ namespace TaskRunners
         }
     }
 
+    /// <summary>
+    ///     T is the return type of the task. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class QueueBasedTaskRunner<T> : AbstractTaskRnner, ITaskRunner<T>
+    {
+        int _threadsAllowed = Environment.ProcessorCount;
+        Queue<Task<T>> tasks_;
+        public Queue<T> results_;
 
-   
-    
+        public QueueBasedTaskRunner(Queue<Task<T>> listOfTasks) : this(listOfTasks, new Queue<T>())
+        { }
+
+        public QueueBasedTaskRunner(Queue<Task<T>> listOfTasks, Queue<T> ListOfResults)
+        {
+            tasks_ = listOfTasks;
+            results_ = ListOfResults;
+        }
+
+        override
+        protected Thread GetThread()
+        {
+            Thread t = new Thread(
+                    () => {
+                        while (true)
+                        {
+                            Task<T> task = GetTask();
+                            if (task is null) break;
+                            task.Start();
+                            AddResult(task.Result);
+                        }
+
+                    }
+                );
+            return t;
+        }
+
+        public Task<T> GetTask()
+        {
+            lock (tasks_)
+            {
+                if (tasks_.Count == 0)
+                {
+                    return null;
+                }
+                if (tasks_.Peek() is null) throw new Exception("Null task not allowed.");
+                return tasks_.Dequeue();
+            }
+        }
+
+        public void AddResult(T result)
+        {
+            lock (this)
+                results_.Enqueue(result);
+        }
+
+        public void AddTask(Task<T> t)
+        {
+            lock (tasks_)
+            {
+                Console.WriteLine("adding tasks...");
+                tasks_.Enqueue(t);
+            }
+        }
+    }
+
+
 }
