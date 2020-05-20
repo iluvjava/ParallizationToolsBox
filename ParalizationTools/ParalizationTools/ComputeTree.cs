@@ -45,7 +45,7 @@ namespace ParalizationTools
             while (toBranch_.Count <= processors && toBranch_.Count > 0)
             {
                 Queue<BranchHeavyComputeNode> moreNodes = toBranch_.Dequeue().Branch();
-                if (moreNodes is null) continue;
+                if (moreNodes is null) continue; // leaf
                 AddMoreNode(moreNodes);
             }
             
@@ -60,7 +60,7 @@ namespace ParalizationTools
                             {
                                 BranchHeavyComputeNode n = GetNextBranching();
                                 if (n is null) break; // shared works all doned. 
-                                Queue<BranchHeavyComputeNode> moreNodes = n.Branch();
+                                Queue<BranchHeavyComputeNode> moreNodes = n.Branch(); // actual works
                                 if (moreNodes is null) continue; // is a leaf. 
                                 AddMoreNode(moreNodes);
                             }

@@ -24,6 +24,13 @@ namespace Tests
         }
 
 
+        [Test]
+        public void TestSimpleBranch()
+        {
+            BranchingNode root = new BranchingNode();
+            root.SimpleBranch();
+        }
+
 
     }
 
@@ -36,7 +43,7 @@ namespace Tests
 
         int height_;
 
-        public BranchingNode(int height = 25)
+        public BranchingNode(int height = 16)
         {
             height_ = height;
         }
@@ -45,10 +52,10 @@ namespace Tests
         {
             if (height_ == 0)
             {
-                UselessWorks();
+                UselessWorks(1024);
                 return null; // a leaf node, not branching allowed. 
             }
-            UselessWorks();
+            UselessWorks(65536);
             left_ = new BranchingNode(height_ - 1);
             right_ = new BranchingNode(height_ - 1);
             Queue<BranchHeavyComputeNode> q = new Queue<BranchHeavyComputeNode>();
@@ -57,13 +64,28 @@ namespace Tests
             return q;
         }
 
-        protected void UselessWorks()
+        public void SimpleBranch()
         {
-            // int useLess = 0;
-            // for (int I = 0; I < 0b1_00000000_00000000; I++)
-            // {
-            //     useLess += I;
-            // }
+            if (height_ == 0)
+            {
+                UselessWorks(1024);
+                return;  // a leaf node, not branching allowed. 
+            }
+            UselessWorks(65536);
+            left_ = new BranchingNode(height_ - 1);
+            right_ = new BranchingNode(height_ - 1);
+            left_.SimpleBranch();
+            right_.SimpleBranch();
+
+        }
+
+        protected void UselessWorks(int workSize)
+        {
+            int useLess = 0;
+            for (int I = 0; I < workSize; I++)
+            {
+                useLess += I;
+            }
 
         }
 
