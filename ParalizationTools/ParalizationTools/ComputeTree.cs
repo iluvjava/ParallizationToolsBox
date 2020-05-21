@@ -7,16 +7,21 @@ using System.Threading.Tasks;
 namespace ComputeTree
 {
     
-
-    public interface IBranchHeavyComputeNode
+    /// <summary>
+    ///     A branch heavy computede models recursive problem that has more works 
+    ///     before recursing
+    /// </summary>
+    public interface IBHComputeNode
     {
         /// <summary>
         ///     Brranch out your children compute node, you have the option to 
-        ///     branch all the way to the leaf, or somewhere between, it depends on the 
+        ///     branch all the way to the leaf (not recommended cause this is not going to be 
+        ///     used by the paralization tools )
+        ///     , or somewhere between, it depends on the 
         ///     problem size of the branching problem. 
         /// </summary>
         /// <param name="pipe"></param>
-        Queue<IBranchHeavyComputeNode> Branch();
+        Queue<IBHComputeNode> Branch();
 
     }
 
@@ -37,13 +42,13 @@ namespace ComputeTree
         ///     A merge heavy compute node will need to branch, but it needs to remmbers its parent. 
         /// </summary>
         /// <param name="n"></param>
-        void RegisterNextComputeNode(IMergeHeavyComputeNode n);
+        void RegisterParentComputeNode(IMergeHeavyComputeNode n);
 
         /// <summary>
         ///     Decrease the rank, meaning that one of its children has completed its tasks. 
         /// </summary>
         /// <returns></returns>
-        int DecreaseRank();
+        void DecreaseRank();
     }
 
     /// <summary>
@@ -53,15 +58,15 @@ namespace ComputeTree
     public class BHComputeNodeSpawner
     {
 
-        IBranchHeavyComputeNode root_;
+        IBHComputeNode root_;
 
         // cannot contain null!!!
-        Queue<IBranchHeavyComputeNode> toBranch_;
+        Queue<IBHComputeNode> toBranch_;
 
-        public BHComputeNodeSpawner(IBranchHeavyComputeNode root)
+        public BHComputeNodeSpawner(IBHComputeNode root)
         {
             root_ = root;
-            toBranch_ = new Queue<IBranchHeavyComputeNode>();
+            toBranch_ = new Queue<IBHComputeNode>();
             toBranch_.Enqueue(root_);
         }
 
@@ -70,7 +75,7 @@ namespace ComputeTree
             int processors = Environment.ProcessorCount;
             while (toBranch_.Count <= processors && toBranch_.Count > 0)
             {
-                Queue<IBranchHeavyComputeNode> moreNodes = toBranch_.Dequeue().Branch();
+                Queue<IBHComputeNode> moreNodes = toBranch_.Dequeue().Branch();
                 if (moreNodes is null) continue;
                 AddMoreNode(moreNodes);
             }
@@ -84,9 +89,9 @@ namespace ComputeTree
                         {
                             while (true)
                             {
-                                IBranchHeavyComputeNode n = GetNextBranching();
+                                IBHComputeNode n = GetNextBranching();
                                 if (n is null) break; // shared works all doned. 
-                                Queue<IBranchHeavyComputeNode> moreNodes = n.Branch();
+                                Queue<IBHComputeNode> moreNodes = n.Branch();
                                 if (moreNodes is null) continue; // is a leaf. 
                                 AddMoreNode(moreNodes);
                             }
@@ -106,7 +111,7 @@ namespace ComputeTree
             }
         }
 
-        public IBranchHeavyComputeNode GetNextBranching()
+        public IBHComputeNode GetNextBranching()
         {
             lock (toBranch_)
             {
@@ -119,11 +124,11 @@ namespace ComputeTree
             }
         }
 
-        protected void AddMoreNode(Queue<IBranchHeavyComputeNode> n)
+        protected void AddMoreNode(Queue<IBHComputeNode> n)
         {
             lock (toBranch_)
             {
-                foreach (IBranchHeavyComputeNode node in n)
+                foreach (IBHComputeNode node in n)
                 {
                     toBranch_.Enqueue(node);
                 }

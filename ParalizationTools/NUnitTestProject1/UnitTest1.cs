@@ -34,7 +34,7 @@ namespace Tests
     }
 
 
-    public class BranchingNode : IBranchHeavyComputeNode
+    public class BranchingNode : IBHComputeNode
     {
 
         BranchingNode left_;
@@ -47,7 +47,7 @@ namespace Tests
             height_ = height;
         }
 
-        public Queue<IBranchHeavyComputeNode> Branch()
+        public Queue<IBHComputeNode> Branch()
         {
             if (height_ == 0)
             {
@@ -57,7 +57,7 @@ namespace Tests
             UselessWorks(65536);
             left_ = new BranchingNode(height_ - 1);
             right_ = new BranchingNode(height_ - 1);
-            Queue<IBranchHeavyComputeNode> q = new Queue<IBranchHeavyComputeNode>();
+            Queue<IBHComputeNode> q = new Queue<IBHComputeNode>();
             q.Enqueue(left_);
             q.Enqueue(right_);
             return q;
