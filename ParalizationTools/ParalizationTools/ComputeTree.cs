@@ -4,11 +4,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ParalizationTools
+namespace ComputeTree
 {
     
 
-    public abstract class BranchHeavyComputeNode
+    public interface IBranchHeavyComputeNode
     {
         /// <summary>
         ///     Brranch out your children compute node, you have the option to 
@@ -16,31 +16,52 @@ namespace ParalizationTools
         ///     problem size of the branching problem. 
         /// </summary>
         /// <param name="pipe"></param>
-        public abstract Queue<BranchHeavyComputeNode> Branch();
+        Queue<IBranchHeavyComputeNode> Branch();
 
     }
 
-    public abstract class MergeHeavyComputeNode
+    /// <summary>
+    ///     A merge heavy compute node is for recursive algorithms that has non
+    ///     trivial tasks when merging the solution after recurring.
+    /// </summary>
+    public interface IMergeHeavyComputeNode : IComparable<IMergeHeavyComputeNode>
     {
+        /// <summary>
+        ///     Get the parent of this compute node. 
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        IMergeHeavyComputeNode GetParent();
 
+        /// <summary>
+        ///     A merge heavy compute node will need to branch, but it needs to remmbers its parent. 
+        /// </summary>
+        /// <param name="n"></param>
+        void RegisterNextComputeNode(IMergeHeavyComputeNode n);
+
+        /// <summary>
+        ///     Decrease the rank, meaning that one of its children has completed its tasks. 
+        /// </summary>
+        /// <returns></returns>
+        int DecreaseRank();
     }
 
     /// <summary>
     ///     This is a class that expand a BranchHeavyConputeNode, it does the following: 
     ///         * expand and execute your branching graph in parallel. 
     /// </summary>
-    public class ComputeNodeSpawner
+    public class BHComputeNodeSpawner
     {
 
-        BranchHeavyComputeNode root_;
+        IBranchHeavyComputeNode root_;
 
         // cannot contain null!!!
-        Queue<BranchHeavyComputeNode> toBranch_;
+        Queue<IBranchHeavyComputeNode> toBranch_;
 
-        public ComputeNodeSpawner(BranchHeavyComputeNode root)
+        public BHComputeNodeSpawner(IBranchHeavyComputeNode root)
         {
             root_ = root;
-            toBranch_ = new Queue<BranchHeavyComputeNode>();
+            toBranch_ = new Queue<IBranchHeavyComputeNode>();
             toBranch_.Enqueue(root_);
         }
 
@@ -49,7 +70,7 @@ namespace ParalizationTools
             int processors = Environment.ProcessorCount;
             while (toBranch_.Count <= processors && toBranch_.Count > 0)
             {
-                Queue<BranchHeavyComputeNode> moreNodes = toBranch_.Dequeue().Branch();
+                Queue<IBranchHeavyComputeNode> moreNodes = toBranch_.Dequeue().Branch();
                 if (moreNodes is null) continue;
                 AddMoreNode(moreNodes);
             }
@@ -63,9 +84,9 @@ namespace ParalizationTools
                         {
                             while (true)
                             {
-                                BranchHeavyComputeNode n = GetNextBranching();
+                                IBranchHeavyComputeNode n = GetNextBranching();
                                 if (n is null) break; // shared works all doned. 
-                                Queue<BranchHeavyComputeNode> moreNodes = n.Branch();
+                                Queue<IBranchHeavyComputeNode> moreNodes = n.Branch();
                                 if (moreNodes is null) continue; // is a leaf. 
                                 AddMoreNode(moreNodes);
                             }
@@ -85,7 +106,7 @@ namespace ParalizationTools
             }
         }
 
-        public BranchHeavyComputeNode GetNextBranching()
+        public IBranchHeavyComputeNode GetNextBranching()
         {
             lock (toBranch_)
             {
@@ -98,19 +119,16 @@ namespace ParalizationTools
             }
         }
 
-        protected void AddMoreNode(Queue<BranchHeavyComputeNode> n)
+        protected void AddMoreNode(Queue<IBranchHeavyComputeNode> n)
         {
             lock (toBranch_)
             {
-                foreach (BranchHeavyComputeNode node in n)
+                foreach (IBranchHeavyComputeNode node in n)
                 {
                     toBranch_.Enqueue(node);
                 }
             }
         }
-
-        
-
     }
 
 

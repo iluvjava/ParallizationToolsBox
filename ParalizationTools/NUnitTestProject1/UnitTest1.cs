@@ -34,7 +34,7 @@ namespace Tests
     }
 
 
-    public class BranchingNode : BranchHeavyComputeNode
+    public class BranchingNode : IBranchHeavyComputeNode
     {
 
         BranchingNode left_;
@@ -47,7 +47,7 @@ namespace Tests
             height_ = height;
         }
 
-        public override Queue<BranchHeavyComputeNode> Branch()
+        public Queue<IBranchHeavyComputeNode> Branch()
         {
             if (height_ == 0)
             {
@@ -57,7 +57,7 @@ namespace Tests
             UselessWorks(65536);
             left_ = new BranchingNode(height_ - 1);
             right_ = new BranchingNode(height_ - 1);
-            Queue<BranchHeavyComputeNode> q = new Queue<BranchHeavyComputeNode>();
+            Queue<IBranchHeavyComputeNode> q = new Queue<IBranchHeavyComputeNode>();
             q.Enqueue(left_);
             q.Enqueue(right_);
             return q;

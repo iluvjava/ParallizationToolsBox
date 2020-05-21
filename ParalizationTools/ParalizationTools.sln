@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParalizationTools", "ParalizationTools\ParalizationTools.csproj", "{9B6AD957-1764-400E-B306-F1D8E33B9445}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NUnitTest", "NUnitTestProject1\NUnitTest.csproj", "{EBAE6BE0-CB4F-496F-87FD-1F70ED8C94A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasicTests", "NUnitTestProject1\BasicTests.csproj", "{EBAE6BE0-CB4F-496F-87FD-1F70ED8C94A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parallelization Examples", "Parallelization Examples\Parallelization Examples.csproj", "{CEEBEC78-4015-4E26-8058-D04FA5F7027A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parallelization Examples", "Parallelization Examples\Parallelization Examples.csproj", "{CEEBEC78-4015-4E26-8058-D04FA5F7027A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
