@@ -21,6 +21,8 @@ namespace TaskRunners
         void AddResult(T result);
         Task<T> GetTask();
         void AddTask(Task<T> t);
+
+        Queue<T> GetResult();
     }
 
     public interface ITaskRunner
@@ -170,6 +172,11 @@ namespace TaskRunners
                 Console.WriteLine("adding tasks...");
                 tasks_.Enqueue(t);
             }
+        }
+
+        public Queue<T> GetResult()
+        {
+            return results_; 
         }
     }
 
