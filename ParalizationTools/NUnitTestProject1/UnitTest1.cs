@@ -2,7 +2,7 @@ using NUnit.Framework;
 using TaskRunners;
 using System;
 using System.Threading.Tasks;
-using ParalizationTools;
+using ComputeTree;
 using System.Collections.Generic;
 
 namespace Tests
@@ -18,7 +18,7 @@ namespace Tests
         public void TestBranchHeavyNode()
         {
             BranchingNode root = new BranchingNode();
-            ComputeNodeSpawner sp = new ComputeNodeSpawner(root);
+            BHComputeNodeSpawner sp = new BHComputeNodeSpawner(root);
 
             sp.SpawnParallel();
         }
@@ -30,7 +30,6 @@ namespace Tests
             BranchingNode root = new BranchingNode();
             root.SimpleBranch();
         }
-
 
     }
 
