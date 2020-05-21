@@ -1,67 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ComputeTree
 {
-    
     /// <summary>
-    ///     A branch heavy computede models recursive problem that has more works 
+    ///     A branch heavy computede models recursive problem that has more works
     ///     before recursing
     /// </summary>
     public interface IBHComputeNode
     {
         /// <summary>
-        ///     Brranch out your children compute node, you have the option to 
-        ///     branch all the way to the leaf (not recommended cause this is not going to be 
+        ///     Brranch out your children compute node, you have the option to
+        ///     branch all the way to the leaf (not recommended cause this is not going to be
         ///     used by the paralization tools )
-        ///     , or somewhere between, it depends on the 
-        ///     problem size of the branching problem. 
+        ///     , or somewhere between, it depends on the
+        ///     problem size of the branching problem.
         /// </summary>
         /// <param name="pipe"></param>
         Queue<IBHComputeNode> Branch();
-
     }
 
     /// <summary>
     ///     A merge heavy compute node is for recursive algorithms that has non
     ///     trivial tasks when merging the solution after recurring.
     /// </summary>
-    public interface IMergeHeavyComputeNode : IComparable<IMergeHeavyComputeNode>
+    public interface IMHComputeNode : IComparable<IMHComputeNode>
     {
         /// <summary>
-        ///     Get the parent of this compute node. 
+        ///     Return all the leafs in the compute tree, under this node, 
+        ///     this method be used by the MHComputeNode shrinker to execute tasks
+        ///     in parallel in topological order. 
+        /// </summary>
+        /// <returns>
+        ///     A queue containing all the leaf compute node under this particular node. 
+        /// </returns>
+        Queue<IMHComputeNode> GetAllLeaves();
+
+        /// <summary>
+        ///     This method will merge the results obtained from all it's children,
+        ///     this is invoked when compute node bubbled all the way up to the front of the
+        ///     priority queue.
+        /// </summary>
+        void Merge();
+
+        /// <summary>
+        ///     Get the parent of this compute node.
         /// </summary>
         /// <returns>
         /// </returns>
-        IMergeHeavyComputeNode GetParent();
+        IMHComputeNode GetParent();
 
         /// <summary>
-        ///     A merge heavy compute node will need to branch, but it needs to remmbers its parent. 
-        /// </summary>
-        /// <param name="n"></param>
-        void RegisterParentComputeNode(IMergeHeavyComputeNode n);
-
-        /// <summary>
-        ///     Decrease the rank, meaning that one of its children has completed its tasks. 
+        ///     Decrease the rank, meaning that one of its children has completed its tasks.
         /// </summary>
         /// <returns></returns>
         void DecreaseRank();
     }
 
     /// <summary>
-    ///     This is a class that expand a BranchHeavyConputeNode, it does the following: 
-    ///         * expand and execute your branching graph in parallel. 
+    ///     This is a class that expand a BranchHeavyConputeNode, it does the following:
+    ///         * expand and execute your branching graph in parallel.
     /// </summary>
     public class BHComputeNodeSpawner
     {
-
-        IBHComputeNode root_;
+        private IBHComputeNode root_;
 
         // cannot contain null!!!
-        Queue<IBHComputeNode> toBranch_;
+        private Queue<IBHComputeNode> toBranch_;
 
         public BHComputeNodeSpawner(IBHComputeNode root)
         {
@@ -79,7 +85,7 @@ namespace ComputeTree
                 if (moreNodes is null) continue;
                 AddMoreNode(moreNodes);
             }
-            
+
             Thread[] threads = new Thread[processors];
 
             for (int I = 0; I < threads.Length; I++)
@@ -90,12 +96,11 @@ namespace ComputeTree
                             while (true)
                             {
                                 IBHComputeNode n = GetNextBranching();
-                                if (n is null) break; // shared works all doned. 
+                                if (n is null) break; // shared works all doned.
                                 Queue<IBHComputeNode> moreNodes = n.Branch();
-                                if (moreNodes is null) continue; // is a leaf. 
+                                if (moreNodes is null) continue; // is a leaf.
                                 AddMoreNode(moreNodes);
                             }
-
                         }
                     );
             }
@@ -117,10 +122,9 @@ namespace ComputeTree
             {
                 if (toBranch_.Count == 0)
                 {
-                    return null; 
+                    return null;
                 }
                 return toBranch_.Dequeue();
-
             }
         }
 
@@ -136,6 +140,7 @@ namespace ComputeTree
         }
     }
 
-
-
+    public class MHComputeNodeShrinker
+    {
+    }
 }
