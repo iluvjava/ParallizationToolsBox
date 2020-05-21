@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace TaskRunners
 {
 
-
     /// <summary>
     ///     A task runner with return values. 
     /// </summary>
