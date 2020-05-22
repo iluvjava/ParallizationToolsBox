@@ -94,7 +94,7 @@ namespace BenchMarkingWithPrimeNumbers
 
             Console.WriteLine($"List of Tasks count: {listOftasks.Count}");
 
-            var taskRunner = new QueueBasedTaskRunner<SortedSet<int>>(listOftasks);
+            var taskRunner = new BagBasedTaskRunner<SortedSet<int>>(listOftasks);
             taskRunner.RunParallel();
 
             List<int> primes = new List<int>(); 

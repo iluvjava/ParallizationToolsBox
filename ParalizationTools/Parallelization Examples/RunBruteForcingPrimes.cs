@@ -16,7 +16,7 @@ namespace Parallelization_Examples
         {
             BruteForcingPrimes theInstance = new BruteForcingPrimes(start, end);
             IBHComputeNode rootComputeNode = theInstance as IBHComputeNode;
-            BHComputeNodeSpawner spawner = new BHComputeNodeSpawner(rootComputeNode);
+            BHBFSComputeNodeSpawner spawner = new BHBFSComputeNodeSpawner(rootComputeNode);
             spawner.SpawnParallel();
             foreach (int I in theInstance.CollectResults())
             {

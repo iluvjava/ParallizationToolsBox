@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ThreadSafeDataStructures;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -58,30 +59,41 @@ namespace ComputeTree
         void DecreaseRank();
     }
 
+
+
+
     /// <summary>
-    ///     This is a class that expand a BranchHeavyConputeNode, it does the following:
+    ///     This is a class that expand a BranchHeavyConputeNode in a DFS mannner, it does the following:
     ///         * expand and execute your branching graph in parallel.
+    ///         
+    ///         
     /// </summary>
-    public class BHComputeNodeSpawner
+    public class BHBFSComputeNodeSpawner
     {
         private IBHComputeNode root_;
 
         // cannot contain null!!!
-        private Queue<IBHComputeNode> toBranch_;
+        protected ParallelCollection<IBHComputeNode> toBranch_;
 
-        public BHComputeNodeSpawner(IBHComputeNode root)
+        public BHBFSComputeNodeSpawner(IBHComputeNode root)
         {
             root_ = root;
-            toBranch_ = new Queue<IBHComputeNode>();
-            toBranch_.Enqueue(root_);
+            toBranch_ = new ParallelQueue<IBHComputeNode>();
+            toBranch_.Put(root_);
         }
 
         public void SpawnParallel()
         {
             int processors = Environment.ProcessorCount;
-            while (toBranch_.Count <= processors && toBranch_.Count > 0)
+            int initialNodeSize = 1;
+            while (!toBranch_.IsEmpty() && initialNodeSize++ <= processors)
             {
-                Queue<IBHComputeNode> moreNodes = toBranch_.Dequeue().Branch();
+                IBHComputeNode node = null;
+                if (!toBranch_.TryGet(out node)) 
+                {
+                    return;
+                };
+                Queue<IBHComputeNode> moreNodes = node.Branch();
                 if (moreNodes is null) continue;
                 AddMoreNode(moreNodes);
             }
@@ -95,10 +107,10 @@ namespace ComputeTree
                         {
                             while (true)
                             {
-                                IBHComputeNode n = GetNextBranching();
-                                if (n is null) break; // shared works all doned.
+                                IBHComputeNode n = null;
+                                if (!toBranch_.TryGet(out n)) return;
                                 Queue<IBHComputeNode> moreNodes = n.Branch();
-                                if (moreNodes is null) continue; // is a leaf.
+                                if (moreNodes is null) continue; // computenode is a leaf 
                                 AddMoreNode(moreNodes);
                             }
                         }
@@ -116,17 +128,6 @@ namespace ComputeTree
             }
         }
 
-        public IBHComputeNode GetNextBranching()
-        {
-            lock (toBranch_)
-            {
-                if (toBranch_.Count == 0)
-                {
-                    return null;
-                }
-                return toBranch_.Dequeue();
-            }
-        }
 
         protected void AddMoreNode(Queue<IBHComputeNode> n)
         {
@@ -134,13 +135,16 @@ namespace ComputeTree
             {
                 foreach (IBHComputeNode node in n)
                 {
-                    toBranch_.Enqueue(node);
+                    toBranch_.Put(node);
                 }
             }
         }
     }
 
+
+
     public class MHComputeNodeShrinker
     {
+
     }
 }

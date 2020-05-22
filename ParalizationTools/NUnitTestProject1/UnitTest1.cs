@@ -18,7 +18,7 @@ namespace Tests
         public void TestBranchHeavyNode()
         {
             BranchingNode root = new BranchingNode();
-            BHComputeNodeSpawner sp = new BHComputeNodeSpawner(root);
+            BHBFSComputeNodeSpawner sp = new BHBFSComputeNodeSpawner(root);
 
             sp.SpawnParallel();
         }
