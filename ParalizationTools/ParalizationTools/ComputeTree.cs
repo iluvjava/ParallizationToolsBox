@@ -59,27 +59,46 @@ namespace ComputeTree
         void DecreaseRank();
     }
 
-
-
-
-    /// <summary>
-    ///     This is a class that expand a BranchHeavyConputeNode in a DFS mannner, it does the following:
-    ///         * expand and execute your branching graph in parallel.
-    ///         
-    ///         
-    /// </summary>
-    public class BHBFSComputeNodeSpawner
+    public class MHComputeNode : IMHComputeNode
     {
-        private IBHComputeNode root_;
+        public int CompareTo(IMHComputeNode other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DecreaseRank()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Queue<IMHComputeNode> GetAllLeaves()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IMHComputeNode GetParent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Merge()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public abstract class ComputeNodeNodeSpawner
+    {
+        protected IBHComputeNode root_;
 
         // cannot contain null!!!
         protected ParallelCollection<IBHComputeNode> toBranch_;
 
-        public BHBFSComputeNodeSpawner(IBHComputeNode root)
+        public ComputeNodeNodeSpawner(IBHComputeNode root)
         {
             root_ = root;
-            toBranch_ = new ParallelQueue<IBHComputeNode>();
-            toBranch_.Put(root_);
+            // Specify data structure for putting in compute node in the super class. 
         }
 
         public void SpawnParallel()
@@ -89,7 +108,7 @@ namespace ComputeTree
             while (!toBranch_.IsEmpty() && initialNodeSize++ <= processors)
             {
                 IBHComputeNode node = null;
-                if (!toBranch_.TryGet(out node)) 
+                if (!toBranch_.TryGet(out node))
                 {
                     return;
                 };
@@ -128,7 +147,6 @@ namespace ComputeTree
             }
         }
 
-
         protected void AddMoreNode(Queue<IBHComputeNode> n)
         {
             lock (toBranch_)
@@ -138,6 +156,37 @@ namespace ComputeTree
                     toBranch_.Put(node);
                 }
             }
+        }
+
+    }
+
+    /// <summary>
+    ///     This is a class that expand a BranchHeavyConputeNode in a BFS mannner, it does the following:
+    ///         * expand and execute your branching graph in parallel.
+    ///         
+    ///         
+    /// </summary>
+    public class BHBFSComputeNodeSpawner: ComputeNodeNodeSpawner
+    {
+        public BHBFSComputeNodeSpawner(IBHComputeNode root) : base(root)
+        {
+            toBranch_ = new ParallelQueue<IBHComputeNode>();
+            toBranch_.Put(root_);
+        }
+    }
+
+    /// <summary>
+    ///     This is a class that expand a BranchHeavyConputeNode in a DFS mannner, it does the following:
+    ///         * expand and execute your branching graph in parallel.
+    ///         
+    ///         
+    /// </summary>
+    public class BHDFSComputeNodeSpawner : ComputeNodeNodeSpawner
+    {
+        public BHDFSComputeNodeSpawner(IBHComputeNode root) : base(root)
+        {
+            toBranch_ = new ParallelStack<IBHComputeNode>();
+            toBranch_.Put(root_);
         }
     }
 
