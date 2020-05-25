@@ -21,7 +21,7 @@ namespace ParalizationTools.ThreadSafeDataStructures
     /// <typeparam name="E">
     ///     The type of the elements that goes into the queue. 
     /// </typeparam>
-    class ParallelPriorityQueue<E> : ParallelCollection<E> where E : IComparable<E>
+    public class ParallelPriorityQueue<E> : ParallelCollection<E> where E : IComparable<E>
     {
         protected SortedSet<E> elements_;
         public ParallelPriorityQueue()

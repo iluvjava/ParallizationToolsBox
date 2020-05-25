@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.ComponentModel;
 
 namespace ComputeTree
 {
@@ -28,85 +29,39 @@ namespace ComputeTree
     /// </summary>
     public interface IMHComputeNode : IComparable<IMHComputeNode>
     {
-        /// <summary>
-        ///     Return all the leafs in the compute tree, under this node, 
-        ///     this method be used by the MHComputeNode shrinker to execute tasks
-        ///     in parallel in topological order. 
-        /// </summary>
-        /// <returns>
-        ///     A queue containing all the leaf compute node under this particular node. 
-        /// </returns>
-        Queue<IMHComputeNode> GetAllLeaves();
-
-        /// <summary>
-        ///     This method will merge the results obtained from all it's children,
-        ///     this is invoked when compute node bubbled all the way up to the front of the
-        ///     priority queue.
-        /// </summary>
-        void Merge();
-
-        /// <summary>
-        ///     Get the parent of this compute node.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        IMHComputeNode GetParent();
-
-        /// <summary>
-        ///     Decrease the rank, meaning that one of its children has completed its tasks.
-        /// </summary>
-        /// <returns></returns>
-        void DecreaseRank();
-
-        /// <summary>
-        ///     The rank is the number of unfinished prerequistive tasks. 
-        /// </summary>
-        /// <returns>
-        ///     An int representing the number of unfinished prerequisite tasks. 
-        /// </returns>
-        int GetRank();
+       
     }
 
-    public class MHComputeNode : IMHComputeNode
+    public abstract class MHComputeNode: IComparer<MHComputeNode>
     {
+        protected MHComputeNode parent_;
+        protected Queue<MHComputeNode> children_;
+        protected int Rank_; 
+        
+        /// <summary>
+        ///     Branch your compute Node. 
+        /// </summary>
+        /// <returns></returns>
+        public abstract void Branch();
 
-        public int rank_;
-        public SortedSet<IMHComputeNode> prereqs_; // The children. 
-
-
-        public int CompareTo(IMHComputeNode other)
-        {
-            if (other.GetHashCode() == this.GetHashCode() && object.ReferenceEquals(this, other)) return 0;
-            return Math.Sign(this.GetRank() - other.GetRank());
-        }
-
-        public void DecreaseRank()
-        {
-            throw new NotImplementedException();
-        }
-
-       public void add
-
-        public Queue<IMHComputeNode> GetAllLeaves()
+        public int Compare(MHComputeNode x, MHComputeNode y)
         {
             throw new NotImplementedException();
         }
 
-        public IMHComputeNode GetParent()
-        {
-            throw new NotImplementedException();
+        /// <summary>
+        ///     Register a children to this compute node. 
+        /// </summary>
+        /// <param name="child"></param>
+        protected void AddChildren(MHComputeNode child)
+        { 
+            
         }
 
-        public int GetRank()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Merge()
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        ///     Merge the compute results. 
+        /// </summary>
+        public abstract void Merge(); 
     }
 
 
