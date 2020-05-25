@@ -9,7 +9,7 @@ namespace Parallelization_Examples
 {
     class BruteForcingPrimes : IBHComputeNode
     {
-        public static int BaseTaskSize = 65536;
+        public static int BaseTaskSize = 65536*4;
         public static int[] PrimeSeed;
         protected int start_;
         protected int end_;
@@ -27,6 +27,7 @@ namespace Parallelization_Examples
 
         public static BruteForcingPrimes GetInstance(int start, int end)
         {
+            start = start <= 0 ? 0 : start; 
             int lowerBound = (int)(Math.Sqrt(end) + 1);
             BruteForcingPrimes.PrimeSeed = (from n in Enumerable.Range(0, lowerBound)
                                        where IsPrimeBruteForce(n)
@@ -83,6 +84,7 @@ namespace Parallelization_Examples
 
         bool IsPrimeCheckSeed(int n)
         {
+            if (n < 0) throw new Exception("This should not happen, there might be integer over flow. ");
             int upperBound = (int)(Math.Sqrt(n) + 1);
             for(int I = 0; I < PrimeSeed.Length && PrimeSeed[I] < upperBound; I++)
             {
@@ -91,18 +93,17 @@ namespace Parallelization_Examples
             return true;
         }
 
-        public SortedSet<int> CollectResults()
+        public void CollectResults(SortedSet<int> bucket)
         {
             if (end_ - start_ <= BaseTaskSize)
             {
-                return res_; 
+                foreach (int number in res_) bucket.Add(number);
+                res_.Clear();
+                res_ = null;
+                return;
             }
-            var leftResult = left_.CollectResults();
-            var rightResult = right_.CollectResults();
-            leftResult.UnionWith(rightResult);
-            left_.res_ = null;
-            right_.res_ = null; 
-            return leftResult; 
+            left_.CollectResults(bucket);
+            right_.CollectResults(bucket);
         }
 
     }

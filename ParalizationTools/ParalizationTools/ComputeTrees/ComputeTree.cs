@@ -57,19 +57,35 @@ namespace ComputeTree
         /// </summary>
         /// <returns></returns>
         void DecreaseRank();
+
+        /// <summary>
+        ///     The rank is the number of unfinished prerequistive tasks. 
+        /// </summary>
+        /// <returns>
+        ///     An int representing the number of unfinished prerequisite tasks. 
+        /// </returns>
+        int GetRank();
     }
 
     public class MHComputeNode : IMHComputeNode
     {
+
+        public int rank_;
+        public SortedSet<IMHComputeNode> prereqs_; // The children. 
+
+
         public int CompareTo(IMHComputeNode other)
         {
-            throw new NotImplementedException();
+            if (other.GetHashCode() == this.GetHashCode() && object.ReferenceEquals(this, other)) return 0;
+            return Math.Sign(this.GetRank() - other.GetRank());
         }
 
         public void DecreaseRank()
         {
             throw new NotImplementedException();
         }
+
+       public void add
 
         public Queue<IMHComputeNode> GetAllLeaves()
         {
@@ -81,10 +97,16 @@ namespace ComputeTree
             throw new NotImplementedException();
         }
 
+        public int GetRank()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Merge()
         {
             throw new NotImplementedException();
         }
+
     }
 
 
