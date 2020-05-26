@@ -9,19 +9,20 @@ using ThreadSafeDataStructures;
 
 namespace ParalizationTools.ThreadSafeDataStructures
 {
+
     /// <summary>
     ///     Accept the Node of a MHComputeTree. 
     /// </summary>
     /// <typeparam name="T">
     ///     The return type of the compute node. 
     /// </typeparam>
-    class MHComputeNodePriorityQueue<T>
+    class MergeHCNodePQ<T>
     {
 
         ParallelStack<IMHComputeNode<T>> topologicalOrder_;
         Dictionary<IMHComputeNode<T>, Task> flags_;
 
-        public MHComputeNodePriorityQueue(IMHComputeNode<T> root)
+        public MergeHCNodePQ(IMHComputeNode<T> root)
         {
             Queue<IMHComputeNode<T>> prevLevel = new Queue<IMHComputeNode<T>>();
             prevLevel.Enqueue(root);

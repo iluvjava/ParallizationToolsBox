@@ -1,4 +1,4 @@
-﻿using ComputeTree;
+﻿/*using ComputeTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace Parallelization_Examples
 {
     class BruteForcingPrimes : IBHComputeNode
     {
-        public static int BaseTaskSize = 65536*4;
+        public static int BaseTaskSize = 65536 * 4;
         public static int[] PrimeSeed;
         protected int start_;
         protected int end_;
@@ -27,12 +27,12 @@ namespace Parallelization_Examples
 
         public static BruteForcingPrimes GetInstance(int start, int end)
         {
-            start = start <= 0 ? 0 : start; 
+            start = start <= 0 ? 0 : start;
             int lowerBound = (int)(Math.Sqrt(end) + 1);
             BruteForcingPrimes.PrimeSeed = (from n in Enumerable.Range(0, lowerBound)
-                                       where IsPrimeBruteForce(n)
-                                       orderby n ascending
-                                       select n).ToArray();
+                                            where IsPrimeBruteForce(n)
+                                            orderby n ascending
+                                            select n).ToArray();
 
             return new BruteForcingPrimes(start, end);
         }
@@ -72,10 +72,10 @@ namespace Parallelization_Examples
 
         static bool IsPrimeBruteForce(int n)
         {
-            if (n <= 1) return false; 
+            if (n <= 1) return false;
             if (n == 2) return true;
             if (n % 2 == 0) return false;
-            for (int I = 3; I < Math.Sqrt(n) + 1; I+=2)
+            for (int I = 3; I < Math.Sqrt(n) + 1; I += 2)
             {
                 if (n % I == 0) return false;
             }
@@ -86,7 +86,7 @@ namespace Parallelization_Examples
         {
             if (n < 0) throw new Exception("This should not happen, there might be integer over flow. ");
             int upperBound = (int)(Math.Sqrt(n) + 1);
-            for(int I = 0; I < PrimeSeed.Length && PrimeSeed[I] < upperBound; I++)
+            for (int I = 0; I < PrimeSeed.Length && PrimeSeed[I] < upperBound; I++)
             {
                 if (n % PrimeSeed[I] == 0) return false;
             }
@@ -108,3 +108,4 @@ namespace Parallelization_Examples
 
     }
 }
+*/

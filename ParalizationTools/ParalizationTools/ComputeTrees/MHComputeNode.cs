@@ -12,9 +12,8 @@ namespace ParalizationTools.ComputeTrees
     /// </typeparam>
     public abstract class MHComputeNode<T> : IMHComputeNode<T>
     {
-        public Queue<IMHComputeNode<T>> children_ { get; set; }
-        protected IMHComputeNode<T> parent_;
-        protected int rank_;
+        private Queue<IMHComputeNode<T>> children_ { get; set; }
+        private IMHComputeNode<T> parent_;
 
         public MHComputeNode()
         {
@@ -25,7 +24,6 @@ namespace ParalizationTools.ComputeTrees
         {
             children_.Enqueue(child);
             child.RegisterParent(this);
-            this.rank_++;
         }
 
         public abstract void Branch();

@@ -17,7 +17,7 @@ namespace Experiments2
         [Test]
         public void TestBHComputeTree()
         {
-            ExampleBHComputeNode root = new ExampleBHComputeNode(16);
+            ExampleBHComputeNode root = new ExampleBHComputeNode(22);
             MHComputeNodeEvaluator<int> tree = new MHComputeNodeEvaluator<int>(root);
             tree.Compute();
             Console.WriteLine(root.GetResult());
@@ -39,12 +39,10 @@ namespace Experiments2
             {
                 if (level_ == 0)
                 {
-                    SomeUselessWorks(65536);
+                    SomeUselessWorks(1024);
                     result_ = 1;
-                    Console.WriteLine($"{this} base");
                     return;
                 }
-                Console.WriteLine($"{this} branched.");
                 AddChild(new ExampleBHComputeNode(level_ - 1, path_ + "1"));
                 AddChild(new ExampleBHComputeNode(level_ - 1, path_ + "2")); 
             }
@@ -60,8 +58,7 @@ namespace Experiments2
                 {
                     result_ += child.GetResult();
                 }
-                SomeUselessWorks(65536);
-                Console.WriteLine($"{this} merged");
+                SomeUselessWorks(1024);
             }
 
             public void SomeUselessWorks(int amount)

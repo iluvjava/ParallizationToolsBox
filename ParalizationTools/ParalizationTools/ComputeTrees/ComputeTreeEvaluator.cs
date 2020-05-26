@@ -18,7 +18,7 @@ namespace ParalizationTools.ComputeTrees
     public class MHComputeNodeEvaluator<T>
     {
         ParallelCollection<IMHComputeNode<T>> forBranching_;
-        MHComputeNodePriorityQueue<T> topologicalQueue;
+        MergeHCNodePQ<T> topologicalQueue;
         IMHComputeNode<T> root_;
 
         public MHComputeNodeEvaluator(MHComputeNode<T> root)
@@ -33,7 +33,7 @@ namespace ParalizationTools.ComputeTrees
         public void Compute()
         {
             ParallelBranch();
-            topologicalQueue = new MHComputeNodePriorityQueue<T>(root_);
+            topologicalQueue = new MergeHCNodePQ<T>(root_);
             ParallelMerge();
         }
 
