@@ -10,7 +10,9 @@ namespace ParalizationTools.ComputeTrees
 {
     /// <summary>
     ///     Give a well defined compute tree, this method will compute the 
-    ///     compute tree, branching and merging it
+    ///     compute tree, branching and merging it. 
+    ///     * 
+    ///         Threads management. 
     /// </summary>
     /// <typeparam name="T">
     ///     The return type of the compute node. 
@@ -26,9 +28,8 @@ namespace ParalizationTools.ComputeTrees
             root_ = root;
             forBranching_ = new ParallelStack<IMHComputeNode<T>>();
             forBranching_.Put(root);
-           
+            
         }
-
 
         public void Compute()
         {
@@ -36,6 +37,8 @@ namespace ParalizationTools.ComputeTrees
             topologicalQueue = new MergeHCNodePQ<T>(root_);
             ParallelMerge();
         }
+
+        
 
         protected void ParallelBranch()
         {
