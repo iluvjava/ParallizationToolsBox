@@ -11,8 +11,7 @@ namespace ParalizationTools.ComputeTrees
     /// <summary>
     ///     Give a well defined compute tree, this method will compute the 
     ///     compute tree, branching and merging it. 
-    ///     * 
-    ///         Threads management. 
+    ///     * Threads management. 
     /// </summary>
     /// <typeparam name="T">
     ///     The return type of the compute node. 
@@ -22,13 +21,14 @@ namespace ParalizationTools.ComputeTrees
         ParallelCollection<IMHComputeNode<T>> forBranching_;
         MergeHCNodePQ<T> topologicalQueue;
         IMHComputeNode<T> root_;
+        int sectionTimeOut; // minutes waits for joining the thread running branch and merge process.  
 
-        public MHComputeNodeEvaluator(MHComputeNode<T> root)
+
+        public MHComputeNodeEvaluator(MHComputeNode<T> root, int sectionTimeOut = 30)
         {
             root_ = root;
             forBranching_ = new ParallelStack<IMHComputeNode<T>>();
-            forBranching_.Put(root);
-            
+            forBranching_.Put(root);            
         }
 
         public void Compute()
@@ -38,6 +38,17 @@ namespace ParalizationTools.ComputeTrees
             ParallelMerge();
         }
 
+        /// <summary>
+        ///     Evaluate the compute tree in parallel.
+        ///     Terminates if it exceedes a threshold on the run-time. 
+        /// </summary>
+        /// <param name="timeOut">
+        ///     The number of mili-second before the computations is aborted by force. 
+        /// </param>
+        public Task ComputeAync(int timeOut = 900*1000)
+        {
+            return null;
+        }
         
 
         protected void ParallelBranch()
@@ -73,7 +84,7 @@ namespace ParalizationTools.ComputeTrees
                 threads[I].Name = $"MHComputeTree Branching: {I}";
                 threads[I].Start();
             }
-            foreach (Thread t in threads) t.Join();
+            foreach (Thread t in threads) t.Join(TimeSpan.FromMilliseconds(sectionTimeOut));
         }
 
         protected void ParallelMerge()
@@ -99,7 +110,7 @@ namespace ParalizationTools.ComputeTrees
                 threads[I].Name = $"MHComputeTree Branching: {I}";
                 threads[I].Start();
             }
-            foreach (Thread t in threads) t.Join();
+            foreach (Thread t in threads) t.Join(TimeSpan.FromMilliseconds(sectionTimeOut));
         }
 
         protected void BranchNode(IMHComputeNode<T> n)
